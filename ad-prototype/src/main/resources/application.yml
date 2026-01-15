@@ -1,0 +1,35 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: ad-auth-prototype
+
+# LDAP/Active Directory Konfiguration
+# Anpassen an das jeweilige AD (z.B. TGM: dc-01.tgm.ac.at)
+ldap:
+  # Domain des Active Directory
+  domain: ${LDAP_DOMAIN:tgm.ac.at}
+  # URL des LDAP/AD Servers
+  url: ${LDAP_URL:ldap://dc-01.tgm.ac.at:389}
+
+# Alternative Konfigurationen fuer verschiedene Umgebungen:
+#
+# TGM Active Directory:
+#   domain: tgm.ac.at
+#   url: ldap://dc-01.tgm.ac.at:389
+#
+# Lokaler Test-LDAP:
+#   domain: example.com
+#   url: ldap://localhost:389
+#
+# Azure AD (ueber LDAPS):
+#   domain: yourdomain.onmicrosoft.com
+#   url: ldaps://yourdomain.onmicrosoft.com:636
+
+# Logging Konfiguration
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.ldap: DEBUG
+    at.tgm.adauth: DEBUG

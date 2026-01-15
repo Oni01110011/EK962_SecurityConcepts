@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windpark Portal - AD Authentication</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background: white;
+            padding: 3rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 500px;
+        }
+        h1 { color: #1e3c72; margin-bottom: 1rem; }
+        p { color: #666; margin-bottom: 2rem; line-height: 1.6; }
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: #1e3c72;
+            color: white;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(30, 60, 114, 0.4);
+        }
+        .badge {
+            display: inline-block;
+            background: #f0f0f0;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.875rem;
+            color: #666;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Windpark Portal</h1>
+    <p>Authentifizierung mit Active Directory. Melden Sie sich mit Ihrem TGM-Account an.</p>
+
+    <div sec:authorize="!isAuthenticated()">
+        <a href="/login" class="btn">Mit AD anmelden</a>
+        <div class="badge">LDAP/Active Directory</div>
+    </div>
+
+    <div sec:authorize="isAuthenticated()">
+        <p>Willkommen, <span sec:authentication="name"></span>!</p>
+        <a href="/dashboard" class="btn">Zum Dashboard</a>
+    </div>
+</div>
+</body>
+</html>
