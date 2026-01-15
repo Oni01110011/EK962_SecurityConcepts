@@ -1,0 +1,33 @@
+server:
+  port: 1234
+
+spring:
+  application:
+    name: social-login-prototype
+
+  # OAuth2 Client Konfiguration
+  security:
+    oauth2:
+      client:
+        registration:
+          # Google OAuth2 Client
+          google:
+            client-id: 89926828318-9lrm4mktl2u73hhifie1k3k8blpdaaip.apps.googleusercontent.com
+            client-secret: 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
+            scope:
+              - email
+              - profile
+
+          # GitHub OAuth2 Client
+          github:
+            client-id: Ov23liM9l10X13llV6zV
+            client-secret: 6c33e66250db507cbaba052972a4a8a6ad7356fe
+            scope:
+              - user:email
+              - read:user
+
+# Logging Konfiguration
+logging:
+  level:
+    org.springframework.security: DEBUG
+    at.tgm.securityconcepts: DEBUG
