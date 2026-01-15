@@ -55,14 +55,30 @@ jacocoTestReport {
         html.required = true
         csv.required = true
     }
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                '**/SocialLoginApplication.class'
+            ])
+        }))
+    }
 }
 
 jacocoTestCoverageVerification {
     violationRules {
         rule {
             limit {
-                minimum = 0.5
+                minimum = 0.98
             }
         }
     }
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                '**/SocialLoginApplication.class'
+            ])
+        }))
+    }
 }
+
+check.dependsOn jacocoTestCoverageVerification
