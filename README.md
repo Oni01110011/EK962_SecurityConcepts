@@ -11,6 +11,66 @@ Uebungsaufgabe zur Implementierung von Authentication Services mit Spring Boot.
 - **Prototyp 1:** Social Login mit OAuth2 (Google, GitHub)
 - **Prototyp 2:** Active Directory Authentifizierung mit LDAP
 
+---
+
+## Authentifizierungsprotokolle im Ueberblick
+
+In diesem Projekt wurden **OAuth2** und **LDAP** implementiert. Hier ein Ueberblick ueber die gaengigsten Authentifizierungsprotokolle:
+
+### LDAP (Lightweight Directory Access Protocol)
+
+**Was:** Protokoll zum Auffinden von Benutzern, Gruppen und Ressourcen in einem Netzwerk-Verzeichnis.
+
+**Wie:** Client sendet Bind-Request an LDAP-Server, der die Credentials gegen das Verzeichnis prueft.
+
+**Wofuer:** Grundlage fuer Microsoft Active Directory, zentrale Benutzerverwaltung in Unternehmen.
+
+### OAuth 2.0
+
+**Was:** Autorisierungs-Framework fuer delegierten Zugriff auf Benutzerkonten (Google, GitHub, etc.).
+
+**Wie:** Benutzer genehmigt Zugriff -> Anwendung erhaelt Authorization Code -> Code wird gegen Access Token getauscht.
+
+**Wofuer:** Social Login, Drittanbieter-Integrationen, API-Zugriff ohne Passwort-Weitergabe.
+
+### Kerberos
+
+**Was:** Netzwerk-Authentifizierungsprotokoll mit Ticket-basierter Authentifizierung.
+
+**Wie:** Benutzer erhaelt Ticket-Granting-Ticket (TGT) vom Key Distribution Center (KDC), damit werden Service-Tickets fuer einzelne Dienste angefordert.
+
+**Wofuer:** Enterprise-Umgebungen mit hohen Sicherheitsanforderungen, Windows-Domaenen.
+
+### SAML (Security Assertion Markup Language)
+
+**Was:** XML-basierter Standard fuer den Austausch von Authentifizierungs- und Autorisierungsdaten.
+
+**Wie:** Benutzer wird zu Identity Provider weitergeleitet, authentifiziert sich, erhaelt signierte XML-Assertion.
+
+**Wofuer:** Single Sign-On (SSO) in Unternehmen, Federation zwischen Organisationen.
+
+### RADIUS (Remote Authentication Dial-In User Service)
+
+**Was:** Protokoll fuer zentralisierte Authentifizierung, Autorisierung und Accounting (AAA).
+
+**Wie:** Zugangspunkt sendet verschluesselte Credentials an RADIUS-Server, der gegen Datenbank oder AD prueft.
+
+**Wofuer:** WLAN-Authentifizierung, VPN-Zugang, Netzwerkzugriffskontrolle.
+
+### Vergleich
+
+| Protokoll | Typ | Einsatzgebiet | In diesem Projekt |
+|-----------|-----|---------------|-------------------|
+| LDAP | Verzeichnisdienst | Unternehmen, AD | **Ja (AD-Prototyp)** |
+| OAuth 2.0 | Autorisierung | Web/Mobile Apps | **Ja (Social Login)** |
+| Kerberos | Authentifizierung | Windows-Domaenen | Nein |
+| SAML | Federation/SSO | Enterprise SSO | Nein |
+| RADIUS | AAA | Netzwerkzugang | Nein |
+
+> Quelle: [Kisi - Authentication Protocols Overview](https://www.getkisi.com/blog/authentication-protocols-overview)
+
+---
+
 ## Projektstruktur
 
 ```
