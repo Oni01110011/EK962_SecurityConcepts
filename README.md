@@ -21,11 +21,9 @@ syt5-ek96-security-concepts/
 │   └── TESTFAELLE.md                # Testdokumentation
 ├── social-login-prototype/          # OAuth2 Social Login
 │   ├── build.gradle
-│   ├── README.md
 │   └── src/main/...
 └── ad-prototype/                    # AD/LDAP Authentication
     ├── build.gradle
-    ├── README.md
     └── src/main/...
 ```
 
@@ -35,10 +33,7 @@ syt5-ek96-security-concepts/
 
 ```bash
 cd social-login-prototype
-
-# Starten (Credentials sind bereits in application.yml konfiguriert)
 ./gradlew bootRun
-
 # Oeffnen: http://localhost:1234
 ```
 
@@ -46,16 +41,177 @@ cd social-login-prototype
 
 ```bash
 cd ad-prototype
-
-# LDAP Konfiguration (optional, defaults auf TGM AD)
 export LDAP_DOMAIN=tgm.ac.at
 export LDAP_URL=ldap://dc-01.tgm.ac.at:389
-
-# Starten
 ./gradlew bootRun
-
 # Oeffnen: http://localhost:8081
 ```
+
+---
+
+## Implementierung: Social Login Prototyp (OAuth2)
+
+### Architektur
+
+```
+┌─────────────┐     ┌─────────────────┐     ┌──────────────────┐
+│   Browser   │────>│  Spring Boot    │────>│  OAuth2 Provider │
+│             │<────│  Application    │<────│  (Google/GitHub) │
+└─────────────┘     └─────────────────┘     └──────────────────┘
+```
+
+### 1. Dependencies
+
+```gradle
+implementation 'org.springframework.boot:spring-boot-starter-security'
+implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+```
+
+### 2. OAuth2 Provider Konfiguration
+
+```yaml
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope: [email, profile]
+          github:
+            client-id: ${GITHUB_CLIENT_ID}
+            client-secret: ${GITHUB_CLIENT_SECRET}
+            scope: [user:email, read:user]
+```
+
+### 3. Security Filter Chain
+
+```java
+http
+    .authorizeHttpRequests(authorize -> authorize
+        .requestMatchers("/", "/login", "/error").permitAll()
+        .anyRequest().authenticated()
+    )
+    .oauth2Login(oauth2 -> oauth2
+        .loginPage("/login")
+        .defaultSuccessUrl("/dashboard", true)
+    );
+```
+
+### 4. Benutzerinfos aus OAuth2 Response
+
+```java
+@GetMapping("/dashboard")
+public String dashboard(@AuthenticationPrincipal OAuth2User principal, Model model) {
+    model.addAttribute("name", principal.getAttribute("name"));
+    model.addAttribute("email", principal.getAttribute("email"));
+    return "dashboard";
+}
+```
+
+### OAuth2 Flow
+
+```
+1. Benutzer klickt "Mit Google anmelden"
+2. Weiterleitung zu Google OAuth2
+3. Benutzer authentifiziert sich
+4. Google sendet Authorization Code
+5. Spring tauscht Code gegen Access Token
+6. Benutzerinfos werden geladen
+7. Session wird erstellt
+```
+
+---
+
+## Implementierung: Active Directory Prototyp (LDAP)
+
+### Architektur
+
+```
+┌─────────────┐     ┌─────────────────┐     ┌──────────────────┐
+│   Browser   │────>│  Spring Boot    │────>│  Active Directory│
+│             │<────│  Application    │<────│  (LDAP Server)   │
+└─────────────┘     └─────────────────┘     └──────────────────┘
+                           │
+                    ┌──────┴───────┐
+                    │ Rollenbasiert │
+                    │ Admin / User  │
+                    └──────────────┘
+```
+
+### 1. Dependencies
+
+```gradle
+implementation 'org.springframework.boot:spring-boot-starter-security'
+implementation 'org.springframework.ldap:spring-ldap-core'
+implementation 'org.springframework.security:spring-security-ldap'
+```
+
+### 2. LDAP Konfiguration
+
+```yaml
+ldap:
+  domain: ${LDAP_DOMAIN:tgm.ac.at}
+  url: ${LDAP_URL:ldap://dc-01.tgm.ac.at:389}
+```
+
+### 3. AD Authentication Provider
+
+```java
+@Bean
+public ActiveDirectoryLdapAuthenticationProvider adProvider() {
+    return new ActiveDirectoryLdapAuthenticationProvider(ldapDomain, ldapUrl);
+}
+```
+
+### 4. Rollenbasierte Zugriffskontrolle
+
+```java
+http
+    .authorizeHttpRequests(authorize -> authorize
+        .requestMatchers("/", "/login").permitAll()
+        .requestMatchers("/admin/**").hasAnyRole("ADMINISTRATOREN", "ADMINS")
+        .requestMatchers("/user/**").authenticated()
+        .anyRequest().authenticated()
+    )
+    .formLogin(form -> form
+        .loginPage("/login")
+        .defaultSuccessUrl("/dashboard", true)
+    );
+```
+
+### 5. AD-Gruppen als Rollen auslesen
+
+```java
+@GetMapping("/dashboard")
+public String dashboard(Authentication auth, Model model) {
+    model.addAttribute("username", auth.getName());
+    model.addAttribute("roles", auth.getAuthorities()
+        .stream().map(GrantedAuthority::getAuthority).toList());
+    return "dashboard";
+}
+```
+
+### AD Authentifizierungs-Flow
+
+```
+1. Benutzer gibt AD-Credentials ein
+2. Spring sendet LDAP Bind-Request
+3. AD prueft Credentials
+4. Gruppenmitgliedschaften werden geladen
+5. AD-Gruppen -> Spring Roles (z.B. ROLE_ADMINISTRATOREN)
+6. Zugriffskontrolle basierend auf Rollen
+```
+
+### Rollen-Mapping
+
+| AD-Gruppe | Spring Role | Zugriff |
+|-----------|-------------|---------|
+| Administratoren | ROLE_ADMINISTRATOREN | /admin/**, /user/** |
+| Users | ROLE_USERS | /user/** |
+
+---
 
 ## Bewertungskriterien (erfuellt)
 
