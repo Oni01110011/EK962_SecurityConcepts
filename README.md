@@ -273,24 +273,6 @@ public String dashboard(Authentication auth, Model model) {
 
 ---
 
-## Bewertungskriterien (erfuellt)
-
-### Anforderungen ueberwiegend erfuellt
-
-- [x] Aufzaehlung und Quellenrecherche der Technologien (siehe `docs/RECHERCHE.md`)
-- [x] Vergleich der Technologien auf moegliche Einsatzgebiete
-- [x] Prototyp zur Authentifikation mittels sozialer Dienste (Google, GitHub)
-- [x] Dokumentation der notwendigen Schritte
-- [x] Testfaelle und deren Dokumentation (siehe `docs/TESTFAELLE.md`)
-
-### Anforderungen zur Gaenze erfuellt
-
-- [x] Prototyp zur Authentifikation mittels Active Directory
-- [x] Anbindung an externes AD (dc-01.tgm.ac.at)
-- [x] Rollenbasierte Zugriffskontrolle (Admin/User-Bereiche)
-- [x] Dokumentation der Schritte
-- [x] Testfaelle dokumentiert
-
 ## Technologien
 
 | Prototyp | Technologie | Framework |
@@ -298,7 +280,3 @@ public String dashboard(Authentication auth, Model model) {
 | Social Login | OAuth 2.0 / OIDC | Spring Security OAuth2 Client |
 | AD Auth | LDAP / Kerberos | Spring Security LDAP |
 
-## Autor
-
-- Aufgabe: EK9.6 Middleware Engineering "Security Concepts"
-- Datum: 2026-01-14
